@@ -19,17 +19,21 @@ RPMCmd commsRead() {
     return cmd;
 }
 
-void commsSendIMU(float yaw, float pitch, float roll,
-                  float qx,  float qy,   float qz, float qw) {
+void commsSendIMU(float qx, float qy, float qz, float qw,
+                  float gx, float gy, float gz,
+                  float ax, float ay, float az) {
     JsonDocument doc;
-    doc["t"]     = "imu";
-    doc["yaw"]   = serialized(String(yaw,   2));
-    doc["pitch"] = serialized(String(pitch, 2));
-    doc["roll"]  = serialized(String(roll,  2));
-    doc["qx"]    = serialized(String(qx,    4));
-    doc["qy"]    = serialized(String(qy,    4));
-    doc["qz"]    = serialized(String(qz,    4));
-    doc["qw"]    = serialized(String(qw,    4));
+    doc["t"]  = "imu";
+    doc["qx"] = serialized(String(qx, 4));
+    doc["qy"] = serialized(String(qy, 4));
+    doc["qz"] = serialized(String(qz, 4));
+    doc["qw"] = serialized(String(qw, 4));
+    doc["gx"] = serialized(String(gx, 4));
+    doc["gy"] = serialized(String(gy, 4));
+    doc["gz"] = serialized(String(gz, 4));
+    doc["ax"] = serialized(String(ax, 4));
+    doc["ay"] = serialized(String(ay, 4));
+    doc["az"] = serialized(String(az, 4));
     serializeJson(doc, Serial);
     Serial.println();
 }

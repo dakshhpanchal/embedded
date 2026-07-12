@@ -3,15 +3,15 @@
 #include <Arduino.h>
 
 // ── Motors (MDDS30) ──────────────────────────────
-constexpr uint8_t LEFT_AN1  = 10;
-constexpr uint8_t LEFT_IN1  = 11;
-constexpr uint8_t LEFT_AN2  = 9;
-constexpr uint8_t LEFT_IN2  = 12;
+constexpr uint8_t LEFT_AN1  = 28;
+constexpr uint8_t LEFT_IN1  = 26;
+constexpr uint8_t LEFT_AN2  = 29;
+constexpr uint8_t LEFT_IN2  = 27;
 
-constexpr uint8_t RIGHT_AN1 = 28;
-constexpr uint8_t RIGHT_IN1 = 27;
-constexpr uint8_t RIGHT_AN2 = 29;
-constexpr uint8_t RIGHT_IN2 = 26;
+constexpr uint8_t RIGHT_AN1 = 9;
+constexpr uint8_t RIGHT_IN1 = 11;
+constexpr uint8_t RIGHT_AN2 = 10;
+constexpr uint8_t RIGHT_IN2 = 12;
 
 // ── Encoders (4784 CPR) ──────────────────────────
 constexpr uint8_t ENC_FR_A = 2;

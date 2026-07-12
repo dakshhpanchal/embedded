@@ -7,11 +7,25 @@ Motor::Motor(uint8_t an1, uint8_t in1, uint8_t an2, uint8_t in2)
       _lastUs(0) {}
 
 void Motor::begin() {
+    // Ensure the output latch is LOW before switching the pins to OUTPUT.
+    // Calling digitalWrite() first makes the pin drive LOW immediately
+    // when pinMode(..., OUTPUT) is applied, avoiding any transient HIGH
+    // on power-up/reset.
+    digitalWrite(_an1, LOW);
+    digitalWrite(_in1, LOW);
+    digitalWrite(_an2, LOW);
+    digitalWrite(_in2, LOW);
+
     pinMode(_an1, OUTPUT); pinMode(_in1, OUTPUT);
     pinMode(_an2, OUTPUT); pinMode(_in2, OUTPUT);
-    _lastUs = micros();
-    _applyPwm(_an1, _in1, 0.0f);
-    _applyPwm(_an2, _in2, 0.0f);
+
+    // Ensure PWM outputs are zero-duty.
+    analogWrite(_an1, 0);
+    analogWrite(_an2, 0);
+
+    _tgtPwm1 = _tgtPwm2 = 0.0f;
+    _curPwm1 = _curPwm2 = 0.0f;
+    _lastUs  = micros();
 }
 
 void Motor::setRPM(float rpm1, float rpm2) {
@@ -35,6 +49,13 @@ void Motor::tick() {
 
 void Motor::_applyPwm(uint8_t an, uint8_t in, float pwm) {
     int out = constrain((int)abs(pwm), 0, MAX_PWM);
-    digitalWrite(in, pwm >= 0.0f ? HIGH : LOW);
+    // Only drive IN high when there's actually a nonzero command in the
+    // positive direction. At pwm == 0 both AN and IN stay LOW instead of
+    // leaving IN asserted with a zero duty cycle.
+    if (out == 0) {
+        digitalWrite(in, LOW);
+    } else {
+        digitalWrite(in, pwm > 0.0f ? HIGH : LOW);
+    }
     analogWrite(an, out);
 }

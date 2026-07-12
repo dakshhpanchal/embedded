@@ -54,8 +54,9 @@ void loop() {
     unsigned long now = millis();
     if (now - _lastSend >= 50) {
         _lastSend = now;
-        commsSendIMU(imuYaw(), imuPitch(), imuRoll(),
-                     imuQx(),  imuQy(),   imuQz(), imuQw());
+        commsSendIMU(imuQx(), imuQy(), imuQz(), imuQw(),
+                     imuGx(), imuGy(), imuGz(),
+                     imuAx(), imuAy(), imuAz());
         commsSendEnc(encFR, encFL, encRR, encRL);
     }
 

@@ -1,0 +1,4 @@
+CompileFlags:
+  Add: 
+    - "-isystem"
+    - "/home/electrodude/.platformio/packages/framework-arduinoteensy/cores/teensy4"

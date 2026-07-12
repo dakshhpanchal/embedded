@@ -15,5 +15,11 @@ float imuQx();
 float imuQy();
 float imuQz();
 float imuQw();
+float imuGx();
+float imuGy();
+float imuGz();
+float imuAx();
+float imuAy();
+float imuAz();
 
 #endif
