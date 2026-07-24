@@ -1,42 +1,41 @@
-#include <WiFi.h>
-#include <esp_now.h>
-#include <esp_wifi.h>
+#include <Arduino.h>
+#include "config.h"
+#include "Motor.h"
 
-const int RELAY_PIN = 2;
-bool relayOn = true;
+// Two MDDS30 Drivers controlling 4 motors (Left and Right)
+Motor leftMotors(
+    LEFT_MDDS30_AN1_PIN,
+    LEFT_MDDS30_IN1_PIN,
+    LEFT_MDDS30_AN2_PIN,
+    LEFT_MDDS30_IN2_PIN);
 
-void setRelay(bool on) {
-  relayOn = on;
-  digitalWrite(RELAY_PIN, on ? HIGH : LOW);
-  Serial.println(on ? "Relay ON" : "Relay OFF");
-}
+Motor rightMotors(
+    RIGHT_MDDS30_AN1_PIN,
+    RIGHT_MDDS30_IN1_PIN,
+    RIGHT_MDDS30_AN2_PIN,
+    RIGHT_MDDS30_IN2_PIN);
 
-void onReceive(const esp_now_recv_info_t *info, const uint8_t *data, int len) {
-  String msg = String((char*)data);
-  Serial.print("Received: ");
-  Serial.println(msg);
-  if (msg == "ON") {
-    setRelay(true);
-  } else if (msg == "OFF") {
-    setRelay(false);
-  }
-  // "PING" ignored entirely now
-}
+const int PWM = 100;
 
 void setup() {
-  Serial.begin(115200);
-  pinMode(RELAY_PIN, OUTPUT);
-  setRelay(true); // initial state ON
-  WiFi.mode(WIFI_STA);
-  esp_wifi_set_channel(1, WIFI_SECOND_CHAN_NONE); // lock channel, must match TX
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("ESP-NOW init failed");
-    return;
-  }
-  esp_now_register_recv_cb(onReceive);
-  Serial.println("RX Ready");
+    Serial.begin(115200);
+
+    leftMotors.begin();
+    rightMotors.begin();
+
+    Serial.println("Driving all motors forward...");
+
+    // Front Left, Rear Left
+    leftMotors.setSpeeds(PWM, PWM);
+
+    // Front Right, Rear Right
+    rightMotors.setSpeeds(PWM, PWM);
 }
 
 void loop() {
-  // no-op
+    // Keep commanding the motors
+    leftMotors.setSpeeds(PWM, PWM);
+    rightMotors.setSpeeds(PWM, PWM);
+
+    delay(20);
 }

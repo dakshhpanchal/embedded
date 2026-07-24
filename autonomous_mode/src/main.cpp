@@ -2,7 +2,6 @@
 #include "config.h"
 #include "motor.h"
 #include "encoder.h"
-#include "imu.h"
 #include "comms.h"
 #include <Wire.h>
 
@@ -24,7 +23,6 @@ void setup() {
 
     leftMotors.begin();
     rightMotors.begin();
-    imuSetup();
 
     Serial.println("[BOOT] autonomous_mode ready");
 }
@@ -33,7 +31,7 @@ void loop() {
     // 1. Read RPM command from ROS2 — set target only
     RPMCmd cmd = commsRead();
     if (cmd.fresh) {
-        leftMotors.setRPM(cmd.left,  cmd.left);
+        leftMotors.setRPM(cmd.left, cmd.left);
         rightMotors.setRPM(cmd.right, cmd.right);
     }
 
@@ -42,27 +40,23 @@ void loop() {
     rightMotors.tick();
 
     // 3. Read encoders
-    encFR.read(); encFL.read();
-    encRR.read(); encRL.read();
+    encFR.read();
+    encFL.read();
+    encRR.read();
+    encRL.read();
 
-    // 4. Update IMU + send at 20 Hz
-    bool imuFresh = false;
-    for (int i = 0; i < 10; i++) {
-        if (imuUpdate()) imuFresh = true;
-    }
-
+    // 4. Send encoder data at 20 Hz
     unsigned long now = millis();
     if (now - _lastSend >= 50) {
         _lastSend = now;
-        commsSendIMU(imuQx(), imuQy(), imuQz(), imuQw(),
-                     imuGx(), imuGy(), imuGz(),
-                     imuAx(), imuAy(), imuAz());
         commsSendEnc(encFR, encFL, encRR, encRL);
     }
 
     if (cmd.fresh) {
-        Serial.print("[CMD] L="); Serial.print(cmd.left);
-        Serial.print(" R="); Serial.println(cmd.right);
+        Serial.print("[CMD] L=");
+        Serial.print(cmd.left);
+        Serial.print(" R=");
+        Serial.println(cmd.right);
     }
 
     if (millis() - _lastStatus >= 2000) {
